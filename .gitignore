@@ -1,0 +1,79 @@
+# 編譯輸出的目錄
+/target/
+*.class
+
+# Maven 本地倉庫
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+**/mvnw*
+**/mvnw.cmd
+
+# 作業系統生成的檔案
+.DS_Store
+Thumbs.db
+*.log
+
+# IDE 設定檔
+/.idea/
+/*.iml
+/.project
+/.classpath
+/.settings/
+/.vscode/
+
+# Eclipse 特定檔案
+/.metadata/
+/*.tmp
+*.bak
+*.swp
+*~.nib
+.localhistory/
+*.orig
+*.bak
+
+# IntelliJ IDEA 特定檔案
+/out/
+.idea/
+*.ipr
+*.iws
+
+# NetBeans 特定檔案
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Windows 系統檔案
+Desktop.ini
+Thumbs.db
+
+# macOS 系統檔案
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Log 檔案
+*.log
+*.log.*
+
+# Spring Boot 特定檔案
+*.war
+*.jar
+
+# 編譯時生成的檔案
+*.class
+
+# 臨時檔案
+*.tmp
+*.swp
+
+# 環境設定檔
+.env
+*.env
+
+# 本地設定檔案
+application.properties
+application.yml
+application-local.properties
+application-local.yml

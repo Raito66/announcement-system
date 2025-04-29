@@ -1,0 +1,54 @@
+/* 自定義標題樣式 */
+h1 {
+	font-size: 28px;
+	color: #333;
+	border-bottom: 2px solid #ddd;
+	padding-bottom: 10px;
+}
+
+/* 無資料提示樣式 */
+.text-danger {
+	font-size: 16px;
+}
+
+/* 動作按鈕間距 */
+button {
+	margin: 0 10px;
+}
+
+/* 將表單分組設置為水平排列 */
+.form-group {
+	display: flex;
+	align-items: center;
+	margin-bottom: 15px; /* 控制每組之間的間距 */
+}
+
+/* 標籤樣式 */
+.form-label {
+	flex: 0 0 100px; /* 固定標籤寬度 */
+	text-align: right;
+	margin-right: 10px; /* 標籤與輸入框的間距 */
+	font-weight: bold;
+}
+
+/* 輸入框樣式 */
+.form-control {
+	flex: 1; /* 讓輸入框自適應寬度 */
+}
+
+/* 自定義 Quill.js 工具欄與內容區域樣式 */
+.ql-toolbar {
+	background-color: #f8f9fa; /* 工具欄背景色 */
+	border: 1px solid #ced4da; /* 工具欄邊框 */
+}
+
+.ql-container {
+	height: 300px; /* 編輯器區域高度 */
+	border: 1px solid #ced4da; /* 編輯器區域邊框 */
+	border-top: none;
+	font-family: 'Arial', sans-serif; /* 字體 */
+}
+
+.ql-toolbar .ql-formats {
+	margin-right: 5px; /* 工具欄按鈕間距 */
+}
