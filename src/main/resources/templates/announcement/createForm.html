@@ -169,17 +169,25 @@
         const publishDateInput = document.getElementById('publishDate');
         const endDateInput = document.getElementById('endDate');
 
-        // 當發布日期改變時，動態設置截止日期的最小值
-        publishDateInput.addEventListener('change', function () {
-            const publishDate = publishDateInput.value;
-            endDateInput.min = publishDate; // 設置截止日期的最小值
-        });
-
-        // 頁面加載時初始化截止日期的最小值
+     	// 初始化頁面時禁用截止日期
         window.addEventListener('load', function () {
             const publishDate = publishDateInput.value;
             if (publishDate) {
                 endDateInput.min = publishDate; // 初始化截止日期的最小值
+                endDateInput.disabled = false; // 啟用截止日期
+            }
+        });
+
+        // 當發布日期改變時，動態設置截止日期的最小值並啟用
+        publishDateInput.addEventListener('change', function () {
+            const publishDate = publishDateInput.value;
+
+            if (publishDate) {
+                endDateInput.min = publishDate; // 設置截止日期的最小值
+                endDateInput.disabled = false; // 啟用截止日期
+            } else {
+                endDateInput.disabled = true; // 如果發布日期被清空，禁用截止日期
+                endDateInput.value = ''; // 清空截止日期的值
             }
         });
 
