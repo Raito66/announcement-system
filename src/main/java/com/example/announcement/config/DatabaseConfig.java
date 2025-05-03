@@ -1,7 +1,10 @@
 package com.example.announcement.config;
 
+import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
@@ -50,5 +53,39 @@ public class DatabaseConfig {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();
         transactionManager.setSessionFactory(sessionFactory);
         return transactionManager;
+    }
+
+    @Bean
+    public ServletContextListener servletContextListener() {
+        return new ServletContextListener() {
+            @Override
+            public void contextInitialized(ServletContextEvent sce) {
+                // 可以在此放置初始化邏輯
+                System.out.println("Application started.");
+            }
+
+            @Override
+            public void contextDestroyed(ServletContextEvent sce) {
+                // 清理 JDBC 驅動
+                Enumeration<java.sql.Driver> drivers = java.sql.DriverManager.getDrivers();
+                while (drivers.hasMoreElements()) {
+                    java.sql.Driver driver = drivers.nextElement();
+                    try {
+                        java.sql.DriverManager.deregisterDriver(driver);
+                        System.out.println("Deregistered JDBC driver: " + driver);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // 停止 AbandonedConnectionCleanupThread
+                try {
+                    com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkedShutdown();
+                    System.out.println("AbandonedConnectionCleanupThread has been shut down.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
     }
 }
