@@ -54,7 +54,7 @@
             <!-- 操作按鈕 -->
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">保存</button>
-                <a th:href="@{/announcements}" class="btn btn-secondary">返回列表</a>
+                <a th:href="@{/announcements}" class="btn btn-secondary" id="backToList">返回列表</a>
             </div>
         </form>
     </div>
@@ -109,9 +109,29 @@
 
 
         
-        // 同步 Quill 編輯器內容到 textarea
+     	// 同步 Quill 編輯器內容到 textarea，並限制文字字數
         quill.on('text-change', function () {
+            const textOnly = quill.getText().trim(); // 獲取純文字內容
+            const maxLength = 100;
+
+            if (textOnly.length > maxLength) {
+                const text = textOnly.substring(0, maxLength); // 截取前 100 字
+                quill.root.innerHTML = text; // 更新 Quill 編輯器內容
+                alert('文字內容不能超過 100 字！');
+            }
+
             document.getElementById('content').value = quill.root.innerHTML.trim();
+        });
+
+
+
+
+     	// 確認返回列表按鈕的行為
+        document.getElementById('backToList').addEventListener('click', function (event) {
+            const userConfirmed = confirm('確定返回列表嗎? 您的修改將無法保存');
+            if (!userConfirmed) {
+                event.preventDefault(); // 如果選擇取消，阻止跳轉
+            }
         });
     </script>
 </body>

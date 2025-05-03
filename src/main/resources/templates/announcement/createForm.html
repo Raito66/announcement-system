@@ -48,138 +48,89 @@
                     <div id="quill-editor" style="height: 200px; border: 1px solid #ced4da;"></div>
                     <!-- 隱藏的 textarea -->
                     <textarea id="content" name="content" th:field="*{announcement.content}" class="form-control d-none"></textarea>
-                    <!-- 限制提示 -->
-                    <small id="contentCounter" class="form-text text-muted">還可以輸入 100 字。</small>
-                    <small id="imageSizeCounter" class="form-text text-muted">單張圖片不得超過 2 MB，總大小不得超過 5 MB。</small>
                 </div>
             </div>
 
             <!-- 操作按鈕 -->
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">保存</button>
-                <a th:href="@{/announcements}" class="btn btn-secondary">返回列表</a>
+                <a th:href="@{/announcements}" class="btn btn-secondary" id="backToList">返回列表</a>
             </div>
         </form>
     </div>
 
 	<script>
-        // 初始化 Quill 編輯器
-        const quill = new Quill('#quill-editor', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, 3, false] }], // 標題等級
-                    ['bold', 'italic', 'underline', 'strike'], // 粗體、斜體、底線、刪除線
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }], // 列表
-                    ['link', 'image'], // 插入超連結與圖片
-                    ['clean'] // 清除格式
-                ]
+		// 從 textarea 獲取內容並設置到 Quill 編輯器
+	    const hiddenContent = document.getElementById('content').value;
+	    const quill = new Quill('#quill-editor', {
+	        theme: 'snow',
+	        modules: {
+	            toolbar: [
+	                [{ 'header': [1, 2, 3, false] }], // 標題等級
+	                ['bold', 'italic', 'underline', 'strike'], // 粗體、斜體、底線、刪除線
+	                [{ 'list': 'ordered' }, { 'list': 'bullet' }], // 列表
+	                ['link', 'image'], // 插入超連結與圖片
+	                ['clean'] // 清除格式
+	            ]
+	        }
+	    });
+	    quill.root.innerHTML = hiddenContent; // 將內容設置到 Quill 編輯器
+	
+	 	// 限制圖片上傳的格式和大小
+	    quill.getModule('toolbar').addHandler('image', function () {
+	        const input = document.createElement('input');
+	        input.setAttribute('type', 'file');
+	        input.setAttribute('accept', 'image/jpeg'); // 僅接受 JPG 格式
+	        input.click();
+	
+	        input.onchange = function () {
+	            const file = input.files[0];
+	            if (file) {
+	                if (file.type !== 'image/jpeg') {
+	                    alert('只允許上傳 JPG 格式的圖片！');
+	                    return;
+	                }
+	
+	                if (file.size > 1 * 1024 * 1024) { // 限制大小為 1MB
+	                    alert('圖片大小不能超過 1MB！');
+	                    return;
+	                }
+	
+	                const reader = new FileReader();
+	                reader.onload = function (e) {
+	                    const base64Image = e.target.result;
+	                    const range = quill.getSelection();
+	                    quill.insertEmbed(range.index, 'image', base64Image);
+	                };
+	                reader.readAsDataURL(file);
+	            }
+	        };
+	    });
+	
+	
+	    
+	 	// 同步 Quill 編輯器內容到 textarea，並限制文字字數
+	    quill.on('text-change', function () {
+	        const textOnly = quill.getText().trim(); // 獲取純文字內容
+	        const maxLength = 100;
+	
+	        if (textOnly.length > maxLength) {
+	            const text = textOnly.substring(0, maxLength); // 截取前 100 字
+	            quill.root.innerHTML = text; // 更新 Quill 編輯器內容
+	            alert('文字內容不能超過 100 字！');
+	        }
+	
+	        document.getElementById('content').value = quill.root.innerHTML.trim();
+	    });
+
+
+     	// 確認返回列表按鈕的行為
+        document.getElementById('backToList').addEventListener('click', function (event) {
+            const userConfirmed = confirm('確定返回列表嗎? 您的新增將無法保存');
+            if (!userConfirmed) {
+                event.preventDefault(); // 如果選擇取消，阻止跳轉
             }
         });
-
-        const textarea = document.getElementById('content'); // 隱藏的 textarea
-        const contentCounter = document.getElementById('contentCounter'); // 字數提示
-        const imageSizeCounter = document.getElementById('imageSizeCounter'); // 圖片大小提示
-        const maxWords = 100; // 最大字數
-        const maxImageSize = 2 * 1024 * 1024; // 單張圖片大小限制 (2 MB)
-        const maxTotalImageSize = 5 * 1024 * 1024; // 總圖片大小限制 (5 MB)
-        let totalImageSize = 0; // 紀錄所有圖片的總大小
-
-        // 計算字數
-        function countWords(text) {
-            return text.trim().replace(/<[^>]*>/g, '').length; // 去掉 HTML 標籤後計算字數
-        }
-
-        // 更新字數提示
-        function updateWordCount() {
-            const editorContent = quill.root.innerHTML.trim();
-            const wordCount = countWords(editorContent);
-
-            if (wordCount > maxWords) {
-                contentCounter.textContent = `已超出 ${wordCount - maxWords} 字，請減少內容！`;
-                contentCounter.style.color = 'red';
-            } else {
-                contentCounter.textContent = `還可以輸入 ${maxWords - wordCount} 字。`;
-                contentCounter.style.color = 'black';
-            }
-        }
-
-        // 更新圖片大小計數器
-        function updateTotalImageSize() {
-            const images = quill.root.querySelectorAll('img');
-            totalImageSize = 0;
-
-            images.forEach(img => {
-                if (img.src.startsWith('data:image')) {
-                    const base64String = img.src.split(',')[1];
-                    const base64Length = base64String.length;
-                    totalImageSize += (base64Length * 3) / 4; // Base64 資料大小計算
-                }
-            });
-
-            if (totalImageSize > maxTotalImageSize) {
-                imageSizeCounter.textContent = `圖片總大小已超出 ${((totalImageSize - maxTotalImageSize) / 1024 / 1024).toFixed(2)} MB！請減少圖片大小。`;
-                imageSizeCounter.style.color = 'red';
-            } else {
-                imageSizeCounter.textContent = `單張圖片不得超過 2 MB，總大小不得超過 5 MB。`;
-                imageSizeCounter.style.color = 'black';
-            }
-        }
-
-        // 插入圖片處理
-        quill.getModule('toolbar').addHandler('image', function () {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-
-            input.onchange = function () {
-                const file = input.files[0];
-                if (file) {
-                    if (file.size > maxImageSize) {
-                        alert('單張圖片大小不能超過 2MB！');
-                        return;
-                    }
-
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const range = quill.getSelection();
-                        quill.insertEmbed(range.index, 'image', e.target.result);
-                        updateTotalImageSize();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-            input.click();
-        });
-
-        // 同步 Quill 編輯器內容到 textarea
-        quill.on('text-change', function () {
-            textarea.value = quill.root.innerHTML.trim();
-            updateWordCount();
-            updateTotalImageSize();
-        });
-
-        // 表單提交時驗證
-        document.querySelector('form').addEventListener('submit', function (event) {
-            const editorContent = quill.root.innerHTML.trim();
-            const wordCount = countWords(editorContent);
-
-            if (wordCount > maxWords) {
-                event.preventDefault();
-                alert('公告內容已超出最大字數限制，請減少內容後重新提交！');
-                return;
-            }
-
-            if (totalImageSize > maxTotalImageSize) {
-                event.preventDefault();
-                alert('圖片總大小已超出 5 MB 限制，請減少圖片後重新提交！');
-                return;
-            }
-        });
-
-        // 初始化字數和圖片大小
-        updateWordCount();
-        updateTotalImageSize();
     </script>
 </body>
 </html>
