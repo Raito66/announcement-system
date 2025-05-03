@@ -35,15 +35,15 @@
                         </tr>
                         <!-- 如果有資料，迭代數據 -->
                         <tr th:each="announcement : ${announcements}">
-                            <td class="text-start" th:text="${announcement.title}">公告標題</td>
-                            <td class="text-start" th:text="${announcement.publishDate}">2025-04-29</td>
-                            <td class="text-start" th:text="${announcement.endDate}">2025-05-05</td>
+                            <td class="text-start" th:text="${announcement.title}"></td>
+                            <td class="text-start" th:text="${announcement.publishDate}"></td>
+                            <td class="text-start" th:text="${announcement.endDate}"></td>
                             <td>
                                 <a class="btn btn-warning btn-sm" th:href="@{/announcements/edit/{id}(id=${announcement.id})}">修改</a>
                             </td>
                             <td>
-                                <a class="btn btn-danger btn-sm" th:href="@{/announcements/delete/{id}(id=${announcement.id})}">刪除</a>
-                            </td>
+                                <a class="btn btn-danger btn-sm" th:href="@{/announcements/delete/{id}(id=${announcement.id})}" onclick="return confirm('確定要刪除這則公告嗎？');">刪除</a>
+                            </td>              
                         </tr>
                     </tbody>
                 </table>
