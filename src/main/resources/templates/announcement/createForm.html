@@ -76,13 +76,22 @@
 	    });
 	    quill.root.innerHTML = hiddenContent; // 將內容設置到 Quill 編輯器
 	
-	 	// 限制圖片上傳的格式和大小
+	 	// 記錄當前圖片數量
+	    let imageCount = 0;
+	    const maxImages = 3;
+
+	    // 限制圖片上傳的格式、大小和數量
 	    quill.getModule('toolbar').addHandler('image', function () {
+	        if (imageCount >= maxImages) {
+	            alert(`最多只能上傳 ${maxImages} 張圖片！`);
+	            return;
+	        }
+
 	        const input = document.createElement('input');
 	        input.setAttribute('type', 'file');
 	        input.setAttribute('accept', 'image/jpeg'); // 僅接受 JPG 格式
 	        input.click();
-	
+
 	        input.onchange = function () {
 	            const file = input.files[0];
 	            if (file) {
@@ -90,17 +99,18 @@
 	                    alert('只允許上傳 JPG 格式的圖片！');
 	                    return;
 	                }
-	
+
 	                if (file.size > 1 * 1024 * 1024) { // 限制大小為 1MB
 	                    alert('圖片大小不能超過 1MB！');
 	                    return;
 	                }
-	
+
 	                const reader = new FileReader();
 	                reader.onload = function (e) {
 	                    const base64Image = e.target.result;
 	                    const range = quill.getSelection();
 	                    quill.insertEmbed(range.index, 'image', base64Image);
+	                    imageCount++; // 增加圖片計數
 	                };
 	                reader.readAsDataURL(file);
 	            }
@@ -109,17 +119,40 @@
 	
 	
 	    
-	 	// 同步 Quill 編輯器內容到 textarea，並限制文字字數
 	    quill.on('text-change', function () {
-	        const textOnly = quill.getText().trim(); // 獲取純文字內容
 	        const maxLength = 100;
-	
+
+	        // 獲取編輯器的純文字內容
+	        const textOnly = quill.getText().trim();
+
+	        // 如果文字超過最大長度
 	        if (textOnly.length > maxLength) {
-	            const text = textOnly.substring(0, maxLength); // 截取前 100 字
-	            quill.root.innerHTML = text; // 更新 Quill 編輯器內容
 	            alert('文字內容不能超過 100 字！');
+
+	            // 使用 Delta 格式刪除多餘的文字
+	            const delta = quill.getContents(); // 獲取編輯器內容的 Delta 格式
+	            let charCount = 0; // 用於計算字元數
+	            const filteredDelta = delta.ops.filter(op => {
+	                if (op.insert && typeof op.insert === 'string') {
+	                    const remainingChars = maxLength - charCount;
+
+	                    if (remainingChars <= 0) {
+	                        return false; // 忽略超出限制的文字
+	                    }
+
+	                    if (op.insert.length > remainingChars) {
+	                        op.insert = op.insert.substring(0, remainingChars); // 截取多餘部分
+	                    }
+
+	                    charCount += op.insert.length;
+	                }
+	                return true; // 保留圖片和其他內容
+	            });
+
+	            quill.setContents({ ops: filteredDelta }); // 更新編輯器內容
 	        }
-	
+
+	        // 同步 Quill 編輯器內容到 textarea
 	        document.getElementById('content').value = quill.root.innerHTML.trim();
 	    });
 
