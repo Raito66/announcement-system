@@ -25,13 +25,13 @@
             <!-- 發布日期 -->
             <div class="form-group mb-3">
                 <label for="publishDate" class="form-label">發布日期:</label>
-                <input type="date" th:field="*{announcement.publishDate}" class="form-control" required>
+                <input type="date" id="publishDate" th:field="*{announcement.publishDate}" class="form-control" required>
             </div>
 
             <!-- 截止日期 -->
             <div class="form-group mb-3">
                 <label for="endDate" class="form-label">截止日期:</label>
-                <input type="date" th:field="*{announcement.endDate}" class="form-control" required>
+                <input type="date" id="endDate" th:field="*{announcement.endDate}" class="form-control" required>
             </div>
 
             <!-- 發布人 -->
@@ -60,7 +60,7 @@
     </div>
 
 	<script>
-		// 從 textarea 獲取內容並設置到 Quill 編輯器
+		//從 textarea 獲取內容並設置到 Quill 編輯器
 	    const hiddenContent = document.getElementById('content').value;
 	    const quill = new Quill('#quill-editor', {
 	        theme: 'snow',
@@ -164,6 +164,25 @@
                 event.preventDefault(); // 如果選擇取消，阻止跳轉
             }
         });
+
+
+        const publishDateInput = document.getElementById('publishDate');
+        const endDateInput = document.getElementById('endDate');
+
+        // 當發布日期改變時，動態設置截止日期的最小值
+        publishDateInput.addEventListener('change', function () {
+            const publishDate = publishDateInput.value;
+            endDateInput.min = publishDate; // 設置截止日期的最小值
+        });
+
+        // 頁面加載時初始化截止日期的最小值
+        window.addEventListener('load', function () {
+            const publishDate = publishDateInput.value;
+            if (publishDate) {
+                endDateInput.min = publishDate; // 初始化截止日期的最小值
+            }
+        });
+
     </script>
 </body>
 </html>
