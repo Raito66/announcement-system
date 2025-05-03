@@ -169,25 +169,25 @@
         const publishDateInput = document.getElementById('publishDate');
         const endDateInput = document.getElementById('endDate');
 
-     	// 初始化頁面時禁用截止日期
-        window.addEventListener('load', function () {
-            const publishDate = publishDateInput.value;
-            if (publishDate) {
-                endDateInput.min = publishDate; // 初始化截止日期的最小值
-                endDateInput.disabled = false; // 啟用截止日期
+     	// 當發布日期改變時，檢查是否大於截止日期
+        publishDateInput.addEventListener('change', function () {
+            const publishDate = new Date(publishDateInput.value);
+            const endDate = new Date(endDateInput.value);
+
+            if (publishDate && endDate && publishDate > endDate) {
+                alert('發布日期不得大於截止日期！');
+                publishDateInput.value = ''; // 清空發布日期欄位
             }
         });
 
-        // 當發布日期改變時，動態設置截止日期的最小值並啟用
-        publishDateInput.addEventListener('change', function () {
-            const publishDate = publishDateInput.value;
+        // 當截止日期改變時，檢查是否小於發布日期
+        endDateInput.addEventListener('change', function () {
+            const publishDate = new Date(publishDateInput.value);
+            const endDate = new Date(endDateInput.value);
 
-            if (publishDate) {
-                endDateInput.min = publishDate; // 設置截止日期的最小值
-                endDateInput.disabled = false; // 啟用截止日期
-            } else {
-                endDateInput.disabled = true; // 如果發布日期被清空，禁用截止日期
-                endDateInput.value = ''; // 清空截止日期的值
+            if (publishDate && endDate && publishDate > endDate) {
+                alert('截止日期不得小於發布日期！');
+                endDateInput.value = ''; // 清空截止日期欄位
             }
         });
 
