@@ -53,7 +53,7 @@
 
             <!-- 操作按鈕 -->
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">保存</button>
+                <button type="submit" class="btn btn-primary" onclick="return confirm('是否確定要保存？');">保存</button>
                 <a th:href="@{/announcements}" class="btn btn-secondary" id="backToList">返回列表</a>
             </div>
         </form>
@@ -165,7 +165,7 @@
             }
         });
 
-
+     	
         const publishDateInput = document.getElementById('publishDate');
         const endDateInput = document.getElementById('endDate');
 
