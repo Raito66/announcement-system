@@ -1,6 +1,9 @@
 package com.example.announcement.service;
 
+import java.io.IOException;
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.announcement.model.Announcement;
 
@@ -34,16 +37,17 @@ public interface AnnouncementService {
 	Announcement getAnnouncementById(int id);
 
 	/**
-	 * 保存或更新公告
-	 *
-	 * @param announcement 公告對象
-	 */
-	void saveAnnouncement(Announcement announcement);
-
-	/**
 	 * 刪除公告
 	 *
 	 * @param id 公告 ID
 	 */
 	void deleteAnnouncement(int id);
+	
+	/**
+	 * 儲存公告
+	 *
+	 * @param announcement 公告對象
+	 */
+	void saveAnnouncementWithAttachments(Announcement announcement, MultipartFile uploadFile1) throws IOException;
+	
 }

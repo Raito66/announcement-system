@@ -38,4 +38,6 @@ public class Announcement {
     private String content; // 公告內容
 
     private String createdBy; // 公告創建者，用於記錄創建公告的用戶
+    
+    private String uploadFile1; // 附件1路径
 }

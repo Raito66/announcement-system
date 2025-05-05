@@ -15,29 +15,37 @@
 <body>
     <div class="container mt-5">
         <h1 class="mb-4">修改公告</h1>
-        <form th:action="@{/announcements/update/{id}(id=${announcement.id})}" method="POST">
+        <form th:action="@{/announcements/update/{id}(id=${announcement.id})}" method="POST" th:object="${announcement}" enctype="multipart/form-data">
+            
+    		<!-- 顯示校驗錯誤 -->
+    		<div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+        		<ul>
+            		<li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+        		</ul>
+    		</div>    
+            
             <!-- 標題 -->
             <div class="form-group mb-3">
                 <label for="title" class="form-label">標題:</label>
-                <input type="text" th:field="*{announcement.title}" class="form-control" placeholder="請輸入標題" maxlength="25" required>
+                <input type="text" th:field="*{title}" class="form-control" placeholder="請輸入標題" maxlength="25" required>
             </div>
 
             <!-- 發布日期 -->
             <div class="form-group mb-3">
                 <label for="publishDate" class="form-label">發布日期:</label>
-                <input type="date" id="publishDate" th:field="*{announcement.publishDate}" class="form-control" required>
+                <input type="date" id="publishDate" th:field="*{publishDate}" class="form-control" required>
             </div>
 
             <!-- 截止日期 -->
             <div class="form-group mb-3">
                 <label for="endDate" class="form-label">截止日期:</label>
-                <input type="date" id="endDate" th:field="*{announcement.endDate}" class="form-control" required>
+                <input type="date" id="endDate" th:field="*{endDate}" class="form-control" required>
             </div>
 
             <!-- 發布人 -->
             <div class="form-group mb-3">
                 <label for="publisher" class="form-label">發布者:</label>
-                <input type="text" th:field="*{announcement.createdBy}" class="form-control" placeholder="請輸入發布人" maxlength="15" required>
+                <input type="text" th:field="*{createdBy}" class="form-control" placeholder="請輸入發布人" maxlength="15" required>
             </div>
 
             <!-- 公告內容 -->
@@ -47,9 +55,23 @@
                     <!-- Quill.js 編輯器容器 -->
                     <div id="quill-editor" style="height: 200px; border: 1px solid #ced4da;"></div>
                     <!-- 隱藏的 textarea -->
-                    <textarea id="content" name="content" th:field="*{announcement.content}" class="form-control d-none"></textarea>
+                    <textarea id="content" name="content" th:field="*{content}" class="form-control d-none"></textarea>
                 </div>
             </div>
+
+			<!-- 附件上傳 -->
+			<div class="form-group mb-3">
+			    <label for="uploadFile1" class="form-label">附件上傳:</label>
+			    <div>
+			        <!-- 顯示已上傳檔案名稱 -->
+			        <p th:if="${fileName != null}" th:text="'目前已上傳：' + ${fileName}"></p>
+			        <p th:if="${fileName == null}">尚未上傳任何檔案</p>
+			
+			        <!-- 文件上傳輸入框 -->
+			        <input type="file" id="uploadFile1" th:field="*{uploadFile1}" name="uploadFile1" class="form-control" accept=".jpg,.png,.pdf,.doc,.docx">
+			        <small class="form-text text-muted">支援格式：JPG, PNG, PDF, DOC, DOCX，每個文件不超過 2MB。</small>
+			    </div>
+			</div>
 
             <!-- 操作按鈕 -->
             <div class="form-actions">
@@ -191,6 +213,38 @@
                 alert('截止日期不得小於發布日期！');
                 endDateInput.value = ''; // 清空截止日期欄位
             }
+        });
+
+     	// 限制附件上傳的格式和大小
+        const maxFileSize = 2 * 1024 * 1024; // 2MB
+
+        // 附件上傳的 input 元素
+        const uploadFile1Input = document.getElementById('uploadFile1');
+        uploadFile1Input.addEventListener('change', function () {
+            const file = uploadFile1Input.files[0]; // 只處理單一檔案
+
+            if (!file) {
+                return; // 如果沒有選擇文件，直接返回
+            }
+
+            // 檢查檔案大小是否超過限制
+            if (file.size > maxFileSize) {
+                alert(`文件 "${file.name}" 的大小超過 2MB！`);
+                uploadFile1Input.value = ''; // 清空文件選擇
+                return;
+            }
+
+            // 檢查檔案格式是否被允許
+            const allowedExtensions = ['jpg', 'png', 'pdf', 'doc', 'docx'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (!allowedExtensions.includes(fileExtension)) {
+                alert(`文件 "${file.name}" 的格式不被支援！`);
+                uploadFile1Input.value = ''; // 清空文件選擇
+                return;
+            }
+
+            // 如果通過所有檢查，可以繼續處理文件
+            console.log(`文件 "${file.name}" 已通過驗證，準備上傳。`);
         });
     </script>
 </body>
