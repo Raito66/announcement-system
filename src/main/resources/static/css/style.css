@@ -26,7 +26,6 @@ button {
 /* 標籤樣式 */
 .form-label {
 	flex: 0 0 100px; /* 固定標籤寬度 */
-	text-align: right;
 	margin-right: 10px; /* 標籤與輸入框的間距 */
 	font-weight: bold;
 }
@@ -51,4 +50,10 @@ button {
 
 .ql-toolbar .ql-formats {
 	margin-right: 5px; /* 工具欄按鈕間距 */
+}
+
+
+.text-left {
+    text-align: left; /* 向左對齊 */
+    display: block;  /* 讓元素獨占一行 */
 }

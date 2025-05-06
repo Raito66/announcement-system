@@ -14,7 +14,7 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="mb-4">修改公告</h1>
+        <h1 class="mb-4">編輯公佈事項</h1>
         <form th:action="@{/announcements/update/{id}(id=${announcement.id})}" method="POST" th:object="${announcement}" enctype="multipart/form-data">
             
     		<!-- 顯示校驗錯誤 -->
@@ -26,31 +26,31 @@
             
             <!-- 標題 -->
             <div class="form-group mb-3">
-                <label for="title" class="form-label">標題:</label>
+                <label for="title" class="form-label text-left">標題:</label>
                 <input type="text" th:field="*{title}" class="form-control" placeholder="請輸入標題" maxlength="25" required>
             </div>
 
             <!-- 發布日期 -->
             <div class="form-group mb-3">
-                <label for="publishDate" class="form-label">發布日期:</label>
+                <label for="publishDate" class="form-label text-left">發佈日期:</label>
                 <input type="date" id="publishDate" th:field="*{publishDate}" class="form-control" required>
             </div>
 
             <!-- 截止日期 -->
             <div class="form-group mb-3">
-                <label for="endDate" class="form-label">截止日期:</label>
+                <label for="endDate" class="form-label text-left">截止日期:</label>
                 <input type="date" id="endDate" th:field="*{endDate}" class="form-control" required>
             </div>
 
             <!-- 發布人 -->
             <div class="form-group mb-3">
-                <label for="publisher" class="form-label">發布者:</label>
-                <input type="text" th:field="*{createdBy}" class="form-control" placeholder="請輸入發布人" maxlength="15" required>
+                <label for="publisher" class="form-label text-left">公佈者:</label>
+                <input type="text" th:field="*{createdBy}" class="form-control" placeholder="請輸入公佈者" maxlength="15" required>
             </div>
 
             <!-- 公告內容 -->
             <div class="form-group mb-3">
-                <label for="content" class="form-label">公布內容:</label>
+                <label for="content" class="form-label text-left">公佈內容:</label>
                 <div class="col-sm-10">
                     <!-- Quill.js 編輯器容器 -->
                     <div id="quill-editor" style="height: 200px; border: 1px solid #ced4da;"></div>
@@ -61,7 +61,7 @@
 
 			<!-- 附件上傳 -->
 			<div class="form-group mb-3">
-			    <label for="uploadFile1" class="form-label">附件上傳:</label>
+			    <label for="uploadFile1" class="form-label text-left">附件上傳:</label>
 			    <div>
 			        <!-- 顯示已上傳檔案名稱 -->
 			        <p th:if="${fileName != null}" th:text="'目前已上傳：' + ${fileName}"></p>
@@ -199,7 +199,7 @@
             const endDate = new Date(endDateInput.value);
 
             if (publishDate && endDate && publishDate > endDate) {
-                alert('發布日期不得大於截止日期！');
+                alert('發佈日期不得大於截止日期！');
                 publishDateInput.value = ''; // 清空發布日期欄位
             }
         });
@@ -210,7 +210,7 @@
             const endDate = new Date(endDateInput.value);
 
             if (publishDate && endDate && publishDate > endDate) {
-                alert('截止日期不得小於發布日期！');
+                alert('截止日期不得小於發佈日期！');
                 endDateInput.value = ''; // 清空截止日期欄位
             }
         });
