@@ -26,6 +26,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Autowired
 	private AnnouncementDAO announcementDAO;
 
+	@Autowired
+	private String uploadDirectory; // 上傳文件的目錄路徑
+	
 	/**
 	 * 獲取公告列表（分頁）
 	 *
@@ -61,6 +64,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	 * @param uploadFile1  上傳的附件（單一檔案）
 	 * @throws IOException 如果保存過程中發生錯誤
 	 */
+	@Override
 	@Transactional
 	public void saveAnnouncementWithAttachments(Announcement announcement, MultipartFile uploadFile1)
 			throws IOException {
@@ -122,7 +126,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
      */
     public String saveUploadFile(MultipartFile uploadFile1) throws IOException {
         // 獲取當前操作系統的文件保存目錄
-        String uploadDir = getUploadDirectory();
+        String uploadDir = uploadDirectory; // 使用注入的 uploadDirectory 變量獲取目錄路徑;
 
         // 確保目標目錄存在，如果不存在，則自動創建
         Files.createDirectories(Paths.get(uploadDir)); // 如果目錄已存在，則不會執行任何操作
@@ -146,46 +150,34 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         return fileName;
     }
 
-    /**
-     * 根據操作系統動態獲取文件保存目錄
-     *
-     * @return 文件保存的目錄路徑
-     */
-    private String getUploadDirectory() throws IOException {
-        // 獲取操作系統名稱
-        String os = System.getProperty("os.name").toLowerCase();
+    @Override
+    @Transactional
+    public void deleteAnnouncement(int id) {
+    	// 查詢公告，確保存在
+    	Announcement announcement = announcementDAO.getById(id);
+    	if (announcement == null) {
+    	    throw new IllegalArgumentException("公告不存在，無法刪除");
+    	}
 
-        // 根據操作系統返回不同的文件保存路徑
-        String uploadDir;
-        if (os.contains("win")) {
-            uploadDir = "D:/announcement-system/uploads";
-        } else if (os.contains("linux")) {
-            uploadDir = "/var/announcement-system/uploads";
-        } else {
-            throw new UnsupportedOperationException("不支持的操作系統: " + os);
-        }
-
-        // 檢查目標目錄是否可寫
-        Path uploadPath = Paths.get(uploadDir);
-        if (!Files.exists(uploadPath)) {
+        // 獲取公告中保存的文件名稱
+        String fileName = announcement.getUploadFile1(); // 假設文件名稱保存在 fileName 屬性中
+        if (fileName != null && !fileName.isEmpty()) {
             try {
-                Files.createDirectories(uploadPath); // 嘗試創建目錄
+                // 使用 getUploadDirectory 方法獲取文件保存的目錄
+                String uploadDir = uploadDirectory; // 使用注入的 uploadDirectory 變量獲取目錄路徑;
+                Path fileToDelete = Paths.get(uploadDir, fileName);
+
+                // 嘗試刪除文件
+                Files.deleteIfExists(fileToDelete);
             } catch (IOException e) {
-                throw new IOException("無法創建目錄，請檢查權限: " + uploadPath, e);
+                // 如果文件刪除失敗，記錄錯誤日誌
+                System.err.println("刪除文件失敗: " + fileName);
+                e.printStackTrace();
             }
         }
 
-        if (!Files.isWritable(uploadPath)) {
-            throw new IOException("目錄不可寫，請檢查權限: " + uploadPath);
-        }
-
-        return uploadDir;
+        // 刪除公告資料
+        announcementDAO.delete(id);
     }
-
-	@Override
-	@Transactional
-	public void deleteAnnouncement(int id) {
-		announcementDAO.delete(id);
-	}
 
 }
