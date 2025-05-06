@@ -15,8 +15,8 @@ import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@Configuration
-@EnableTransactionManagement
+@Configuration // 表示這是一個配置類，等同於 Spring 的 XML 配置文件。Spring 容器會在啟動時加載這個類，並應用其中的配置。
+@EnableTransactionManagement // 啟用注解驅動的事務管理功能。這樣可以使用 @Transactional 注解來管理數據庫事務。
 public class DatabaseConfig {
 
     @Bean

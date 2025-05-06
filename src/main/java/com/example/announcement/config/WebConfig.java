@@ -15,9 +15,9 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 
-@Configuration
-@EnableWebMvc
-@ComponentScan(basePackages = "com.example.announcement") // 掃描控制器和組件
+@Configuration // 表示這是一個配置類，等同於 Spring 的 XML 配置文件，Spring 容器會在啟動時加載這個類，並應用其中的配置。
+@EnableWebMvc // 啟用 Spring MVC 的配置，將其用作 Web 應用程序的支持。包括註冊 Spring MVC 的核心組件（例如 DispatcherServlet）。
+@ComponentScan(basePackages = "com.example.announcement") // 指定要掃描的基礎包，Spring 會自動檢測並註冊該包中的所有 @Controller、@Service、@Repository 等註解的類。
 public class WebConfig implements WebMvcConfigurer {
 
     @Bean
