@@ -57,3 +57,7 @@ button {
     text-align: left; /* 向左對齊 */
     display: block;  /* 讓元素獨占一行 */
 }
+
+.h1-title {
+	background: linear-gradient(to bottom, #f6f6f6, #f0f0f0); padding-left: 12px;
+}

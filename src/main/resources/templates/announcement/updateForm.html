@@ -14,7 +14,7 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="mb-4">編輯公佈事項</h1>
+        <h1 class="mb-4 h1-title">編輯公佈事項</h1>
         <form th:action="@{/announcements/update/{id}(id=${announcement.id})}" method="POST" th:object="${announcement}" enctype="multipart/form-data">
             
     		<!-- 顯示校驗錯誤 -->
